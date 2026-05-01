@@ -220,6 +220,13 @@ The answer layer synthesizes a short evidence-grounded response and returns cita
 - answer synthesis is intentionally conservative and simple
 - benchmarking infrastructure exists, but dataset creation is still manual
 
+## Public Release Corpus
+
+SectionIQ release validation uses the public-domain U.S. Army `TM-1-1500-204-23`
+aviation maintenance manual series. The tracked corpus manifest stores source
+metadata only; downloaded PDFs, extracted stores, benchmark outputs, and local
+PageIndex workspaces remain ignored.
+
 ## Recommended Test Flow For Aircraft Manuals
 
 1. run a page-limited ingest first:

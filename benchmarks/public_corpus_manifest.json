@@ -1,0 +1,107 @@
+{
+  "corpus_id": "tm-1-1500-204-23",
+  "title": "U.S. Army Aviation Unit and Intermediate Maintenance Manuals for General Aircraft Maintenance",
+  "description": "Public-domain U.S. Army technical manual series used as SectionIQ's release validation corpus.",
+  "license_note": "Public domain in the United States as a work of the U.S. federal government / U.S. military, per Wikimedia Commons file pages.",
+  "local_dir": "data/public/tm-1-1500-204-23",
+  "sources": [
+    {
+      "id": "tm-1-1500-204-23-1",
+      "title": "General Maintenance and Practices",
+      "volume": 1,
+      "filename": "TM-1-1500-204-23-1.pdf",
+      "page_count": 453,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-1.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-1.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-2",
+      "title": "Pneudraulics Maintenance and Practices",
+      "volume": 2,
+      "filename": "TM-1-1500-204-23-2.pdf",
+      "page_count": 260,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-2.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-2.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-3",
+      "title": "Maintenance Practices for Fuel and Oil Systems",
+      "volume": 3,
+      "filename": "TM-1-1500-204-23-3.pdf",
+      "page_count": 127,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-3.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-3.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-4",
+      "title": "Electrical and Instrument Maintenance Procedures and Practices",
+      "volume": 4,
+      "filename": "TM-1-1500-204-23-4.pdf",
+      "page_count": 109,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-4.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-4.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-5",
+      "title": "Propeller, Rotor, and Powertrain Maintenance Practices",
+      "volume": 5,
+      "filename": "TM-1-1500-204-23-5.pdf",
+      "page_count": 98,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-5.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-5.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-6",
+      "title": "Hardware and Consumable Materials",
+      "volume": 6,
+      "filename": "TM-1-1500-204-23-6.pdf",
+      "page_count": 373,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-6.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-6.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-7",
+      "title": "Nondestructive Testing and Flaw Detection Procedures and Practices",
+      "volume": 7,
+      "filename": "TM-1-1500-204-23-7.pdf",
+      "page_count": 69,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-7.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-7.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-9",
+      "title": "Tools and Ground Support Equipment",
+      "volume": 9,
+      "filename": "TM-1-1500-204-23-9.pdf",
+      "page_count": 275,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-9.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-9.pdf",
+      "license": "Public domain"
+    },
+    {
+      "id": "tm-1-1500-204-23-10",
+      "title": "Sheet Metal Shop Practices",
+      "volume": 10,
+      "filename": "TM-1-1500-204-23-10.pdf",
+      "page_count": 467,
+      "source_url": "https://commons.wikimedia.org/wiki/File:TM-1-1500-204-23-10.pdf",
+      "download_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TM-1-1500-204-23-10.pdf",
+      "license": "Public domain"
+    }
+  ],
+  "fallback_sources": [
+    {
+      "id": "faa-aviation-handbooks",
+      "title": "FAA Aviation Handbooks and Manuals",
+      "source_url": "https://www.faa.gov/regulations_policies/handbooks_manuals/aviation",
+      "note": "Official FAA handbooks are useful secondary smoke-test PDFs, but they are more textbook-like than maintenance-manual-like."
+    }
+  ]
+}

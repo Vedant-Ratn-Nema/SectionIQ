@@ -32,7 +32,7 @@ def parse_page_range(value: str | None) -> tuple[int, int] | None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run SectionIQ on an aircraft maintenance manual.")
     parser.add_argument("--pdf", required=True, help="Absolute path to the PDF manual.")
-    parser.add_argument("--store", default=".amm_demo_store", help="Local store path.")
+    parser.add_argument("--store", default=".sectioniq_demo_store", help="Local store path.")
     parser.add_argument("--max-pages", type=int, default=None, help="Only ingest the first N pages.")
     parser.add_argument("--page-range", default=None, help="Ingest a specific page range like 200-260.")
     parser.add_argument("--query", action="append", default=[], help="Query to run after indexing. Can be repeated.")

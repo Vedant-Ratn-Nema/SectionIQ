@@ -15,6 +15,11 @@ from .utils import infer_title_from_path, normalize_whitespace, stable_hash
 NUMBERED_HEADING_RE = re.compile(r"^(\d+(?:\.\d+){0,4})[\s\-:]+(.+)$")
 LIST_ITEM_RE = re.compile(r"^(?:[-*•]|\d+[.)])\s+")
 MULTISPACE_RE = re.compile(r"\s{2,}")
+EXPLICIT_WARNING_RE = re.compile(r"^(?:warning|caution|danger)\s*[:.\-]\s+\S+", re.I)
+EXPLICIT_NOTE_RE = re.compile(r"^(?:note|important)\s*[:.\-]\s+\S+", re.I)
+CODE_TOKEN_RE = re.compile(r"^[A-Z]?\d{1,4}(?:[-.]\d{1,4}){1,5}[A-Z]?$", re.I)
+PART_TOKEN_RE = re.compile(r"^(?=.*\d)[A-Z0-9]+(?:[-_/][A-Z0-9]+){1,6}$", re.I)
+NUMBER_TOKEN_RE = re.compile(r"^\d+(?:[.,]\d+)?$")
 
 
 @dataclass
@@ -96,6 +101,9 @@ class IngestionPipeline:
         block_counter = 0
         heading_candidates = 0
         table_count = 0
+        suspected_table_rows = 0
+        warning_count = 0
+        note_count = 0
 
         for page_num, page_text in enumerate(pages, start=1):
             lines = [line.rstrip() for line in page_text.splitlines()]
@@ -119,6 +127,7 @@ class IngestionPipeline:
                         j += 1
                     block_counter += 1
                     table_count += 1
+                    suspected_table_rows += len(raw_rows)
                     table = self._build_table_block(
                         doc_id=doc_id,
                         block_id=f"{doc_id}:b{block_counter:05d}",
@@ -171,12 +180,17 @@ class IngestionPipeline:
                         item_lines.append(candidate)
                         j += 1
                     block_counter += 1
+                    block_type = self._classify_text_block(" ".join(item_lines))
+                    if block_type == "warning":
+                        warning_count += 1
+                    elif block_type == "note":
+                        note_count += 1
                     blocks.append(
                         self._make_text_block(
                             doc_id=doc_id,
                             block_id=f"{doc_id}:b{block_counter:05d}",
                             page_num=page_num,
-                            block_type=self._classify_text_block(" ".join(item_lines)),
+                            block_type=block_type,
                             text=" ".join(item_lines),
                             current_path=current_path,
                         )
@@ -200,12 +214,17 @@ class IngestionPipeline:
                     j += 1
                 paragraph_text = " ".join(paragraph_lines)
                 block_counter += 1
+                block_type = self._classify_text_block(paragraph_text)
+                if block_type == "warning":
+                    warning_count += 1
+                elif block_type == "note":
+                    note_count += 1
                 blocks.append(
                     self._make_text_block(
                         doc_id=doc_id,
                         block_id=f"{doc_id}:b{block_counter:05d}",
                         page_num=page_num,
-                        block_type=self._classify_text_block(paragraph_text),
+                        block_type=block_type,
                         text=paragraph_text,
                         current_path=current_path,
                     )
@@ -216,7 +235,12 @@ class IngestionPipeline:
             "weak_headings": heading_candidates == 0,
             "has_tables": table_count > 0,
             "table_count": table_count,
+            "suspected_table_rows": suspected_table_rows,
+            "warning_count": warning_count,
+            "note_count": note_count,
             "heading_count": heading_candidates,
+            "heading_density": round(heading_candidates / max(len(pages), 1), 3),
+            "block_count": len(blocks),
             "page_text_coverage": round(sum(1 for page in pages if page.strip()) / max(len(pages), 1), 3),
         }
         document = Document(
@@ -271,12 +295,41 @@ class IngestionPipeline:
 
     def _looks_like_table_row(self, line: str) -> bool:
         stripped = line.strip()
+        if not stripped or EXPLICIT_WARNING_RE.match(stripped) or EXPLICIT_NOTE_RE.match(stripped):
+            return False
         if "|" in stripped and stripped.count("|") >= 1:
             return True
         columns = [part for part in MULTISPACE_RE.split(stripped) if part]
         if len(columns) >= 3:
             short_columns = sum(1 for part in columns if len(part.split()) <= 6)
             return short_columns >= 2
+        return self._looks_like_collapsed_table_row(stripped)
+
+    def _looks_like_collapsed_table_row(self, line: str) -> bool:
+        tokens = line.split()
+        if len(tokens) < 4:
+            return False
+        if line.endswith((".", "?", "!")):
+            return False
+
+        code_hits = sum(1 for token in tokens if CODE_TOKEN_RE.match(token))
+        part_hits = sum(1 for token in tokens if PART_TOKEN_RE.match(token))
+        numeric_hits = sum(1 for token in tokens if NUMBER_TOKEN_RE.match(token.strip("(),;:")))
+        uppercase_code_hits = sum(
+            1
+            for token in tokens
+            if any(char.isdigit() for char in token) and token.upper() == token and len(token) >= 3
+        )
+
+        starts_with_code = CODE_TOKEN_RE.match(tokens[0]) is not None
+        has_terminal_value = NUMBER_TOKEN_RE.match(tokens[-1].strip("(),;:")) is not None
+        has_identifier_columns = part_hits >= 1 or uppercase_code_hits >= 2
+        if starts_with_code and has_identifier_columns:
+            return True
+        if starts_with_code and has_terminal_value and numeric_hits >= 2:
+            return True
+        if has_terminal_value and has_identifier_columns and len(tokens) <= 14:
+            return True
         return False
 
     def _build_table_block(
@@ -294,6 +347,8 @@ class IngestionPipeline:
                 columns = [normalize_whitespace(part) for part in raw.split("|") if normalize_whitespace(part)]
             else:
                 columns = [normalize_whitespace(part) for part in MULTISPACE_RE.split(raw) if normalize_whitespace(part)]
+                if len(columns) == 1:
+                    columns = self._split_collapsed_table_row(raw)
             parsed_rows.append(columns)
             for col_idx, cell in enumerate(columns):
                 cells.append({"row": row_idx, "col": col_idx, "text": cell})
@@ -318,6 +373,31 @@ class IngestionPipeline:
             rows=parsed_rows,
             cells=cells,
         )
+
+    def _split_collapsed_table_row(self, row: str) -> list[str]:
+        tokens = normalize_whitespace(row).split()
+        if len(tokens) < 4:
+            return [normalize_whitespace(row)]
+        columns: list[str] = []
+        start = 0
+        end = len(tokens)
+        if CODE_TOKEN_RE.match(tokens[0]):
+            columns.append(tokens[0])
+            start = 1
+        if start < end and PART_TOKEN_RE.match(tokens[start]):
+            columns.append(tokens[start])
+            start += 1
+        if start < end and NUMBER_TOKEN_RE.match(tokens[-1].strip("(),;:")):
+            end -= 1
+            middle = " ".join(tokens[start:end]).strip()
+            if middle:
+                columns.append(middle)
+            columns.append(tokens[-1].strip("(),;:"))
+        else:
+            middle = " ".join(tokens[start:end]).strip()
+            if middle:
+                columns.append(middle)
+        return columns or [normalize_whitespace(row)]
 
     def _make_text_block(
         self,
@@ -349,9 +429,9 @@ class IngestionPipeline:
 
     def _classify_text_block(self, text: str) -> str:
         lowered = text.lower()
-        if lowered.startswith(("warning", "caution", "danger")):
+        if EXPLICIT_WARNING_RE.match(text):
             return "warning"
-        if lowered.startswith(("note", "important")):
+        if EXPLICIT_NOTE_RE.match(text):
             return "note"
         if LIST_ITEM_RE.match(text):
             return "list_item"

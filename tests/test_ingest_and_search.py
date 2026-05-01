@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+import sectioniq
 from sectioniq.backends import AnswerGenerator
 from sectioniq.backends import OpenAIEmbeddingBackend
 from sectioniq.backends import VectorBackend
@@ -116,7 +117,7 @@ def test_openai_embedding_backend_retries_with_smaller_payloads():
     fake_embeddings = FakeEmbeddingsAPI()
     backend.client = SimpleNamespace(embeddings=fake_embeddings)
 
-    huge_query = ("Part 622-5735-002 needs review. " + ("x ! " * 7000)).strip()
+    huge_query = ("Part ABC-1234-567 needs review. " + ("x ! " * 7000)).strip()
     vectors = backend.embed_texts([huge_query])
 
     assert vectors.shape == (1, 3)
@@ -169,3 +170,62 @@ def test_search_falls_back_when_dense_query_embedding_fails(tmp_path):
     )
     assert hits
     assert hits[0].block_type == "table"
+
+
+def test_collapsed_technical_rows_become_table_blocks(tmp_path):
+    pipeline = IngestionPipeline()
+    _, blocks = pipeline.ingest_pages(
+        source_path=str(tmp_path / "public_manual.pdf"),
+        title="Public Manual",
+        pages=[
+            "\n".join(
+                [
+                    "PARTS LIST",
+                    "12-34-56 ABC-1234-567 Servo Mount 1",
+                    "12-34-57 XYZ-0001-222 Support Bracket 2",
+                ]
+            )
+        ],
+    )
+    tables = [block for block in blocks if block.block_type == "table"]
+    assert tables
+    assert tables[0].rows[0] == ["12-34-56", "ABC-1234-567", "Servo Mount", "1"]
+
+
+def test_warning_labels_are_strict(tmp_path):
+    pipeline = IngestionPipeline()
+    _, blocks = pipeline.ingest_pages(
+        source_path=str(tmp_path / "public_manual.pdf"),
+        title="Public Manual",
+        pages=[
+            "\n".join(
+                [
+                    "WARNING: Disconnect electrical power before maintenance.",
+                    "Warning System Test Procedure",
+                    "NOTE: Use approved cleaning solvent.",
+                ]
+            )
+        ],
+    )
+    by_text = {block.text: block.block_type for block in blocks}
+    assert by_text["WARNING: Disconnect electrical power before maintenance."] == "warning"
+    assert by_text["Warning System Test Procedure"] != "warning"
+    assert by_text["NOTE: Use approved cleaning solvent."] == "note"
+
+
+def test_deprecated_import_namespace_still_resolves():
+    from structured_pdf_rag import StructuredPDFRAG
+    from structured_pdf_rag.utils import truncate_text_by_char_budget
+
+    assert StructuredPDFRAG is SectionIQ
+    assert truncate_text_by_char_budget("abcdef", 3).startswith("abc")
+    assert sectioniq.__version__ == "0.1.0a1"
+
+
+def test_long_query_preprocessing_preserves_identifiers():
+    from sectioniq.preprocess import QueryPreprocessor
+
+    bundle = QueryPreprocessor().prepare(("Please review ABC-1234-567. " + "background details " * 1000).strip())
+    assert "ABC-1234-567" in bundle.dense_query
+    assert "ABC-1234-567" in bundle.rerank_query
+    assert "ABC-1234-567" in bundle.answer_query

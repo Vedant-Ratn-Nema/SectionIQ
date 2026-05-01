@@ -1,38 +1,36 @@
-name: Tests
+name: Publish
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    tags:
+      - "v*"
 
 jobs:
-  test:
+  publish:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11", "3.12"]
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           cache: "pip"
 
-      - name: Install package
-        run: python -m pip install -e ".[dev]"
+      - name: Install build tools
+        run: python -m pip install build twine
 
       - name: Confidential reference scan
         run: python scripts/check_confidential_refs.py
-
-      - name: Run tests
-        run: python -m pytest
 
       - name: Build package
         run: python -m build
 
       - name: Check package metadata
         run: python -m twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

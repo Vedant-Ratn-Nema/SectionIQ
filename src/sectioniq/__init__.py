@@ -10,6 +10,8 @@ from .models import AnswerEvidence, AnswerResult, Block, Document, RetrievalHit,
 from .preprocess import QueryPreprocessor, QueryPreprocessorConfig
 from .sdk import SectionIQ, StructuredPDFRAG
 
+__version__ = "0.1.0a1"
+
 __all__ = [
     "AnswerGenerator",
     "AnswerEvidence",
@@ -27,4 +29,5 @@ __all__ = [
     "SectionIQ",
     "StructuredPDFRAG",
     "TableBlock",
+    "__version__",
 ]

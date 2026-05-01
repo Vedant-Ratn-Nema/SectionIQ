@@ -22,6 +22,8 @@ env/
 .env
 .env.*
 !.env.example
+.confidential_patterns
+.confidential_patterns.*
 
 # OS/editor noise
 .DS_Store
@@ -30,6 +32,8 @@ env/
 
 # SectionIQ local stores and generated indexes
 .sectioniq/
+.sectioniq_demo_store/
+.sectioniq_public_store/
 .rag_store/
 .structured_pdf_rag/
 .amm_demo_store/
@@ -37,10 +41,12 @@ env/
 *.npz
 
 # Benchmark and experiment artifacts
+data/
 outputs/
-scripts/
 logs/
 .pageindex_workspace*/
+.public_pageindex_workspace*/
+benchmark-results/
 examples/*checkpoint*.json
 snip.py
 snip.ipynb

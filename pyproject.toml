@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sectioniq"
-version = "0.1.0"
+version = "0.1.0a1"
 description = "Structured PDF retrieval with typed evidence blocks, hybrid search, and grounded citations."
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
+keywords = ["pdf", "rag", "retrieval", "bm25", "embeddings", "citations"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -25,9 +25,17 @@ dependencies = [
   "pypdf>=5.0.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Vedant-Ratn-Nema/SectionIQ"
+Repository = "https://github.com/Vedant-Ratn-Nema/SectionIQ"
+Issues = "https://github.com/Vedant-Ratn-Nema/SectionIQ/issues"
+Changelog = "https://github.com/Vedant-Ratn-Nema/SectionIQ/blob/main/CHANGELOG.md"
+
 [project.optional-dependencies]
 dev = [
+  "build>=1.2.0",
   "pytest>=8.0.0",
+  "twine>=5.0.0",
 ]
 bench = [
   "PyPDF2>=3.0.0",
