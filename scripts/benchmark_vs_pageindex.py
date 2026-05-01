@@ -33,8 +33,8 @@ from pageindex import PageIndexClient
 page_index_module = importlib.import_module("pageindex.page_index")
 
 
-DEFAULT_PDF = "/Users/admin/Downloads/King Air Fusion AMM 5230829639.pdf"
-DEFAULT_CSV = "/Users/admin/Desktop/PDF_Libr_OP - First_100.csv"
+DEFAULT_PDF = ""
+DEFAULT_CSV = ""
 
 
 @dataclass
