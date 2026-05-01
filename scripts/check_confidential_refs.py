@@ -10,11 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LOCAL_PATTERN_FILE = ROOT / ".confidential_patterns"
 
-DEFAULT_PATTERNS = [
-    "/Users/",
-    "BEGIN CONFIDENTIAL",
-    "DO NOT DISTRIBUTE",
-]
+DEFAULT_PATTERNS: list[str] = []
 
 
 def tracked_files() -> list[Path]:

@@ -23,8 +23,8 @@ for import_path in [SRC, VENDOR, PAGEINDEX_ROOT]:
 from sectioniq import SectionIQ
 
 
-DEFAULT_PDF = "/Users/admin/Downloads/King Air Fusion AMM 5230829639.pdf"
-DEFAULT_CSV = "/Users/admin/Desktop/PDF_Libr_OP - First_100.csv"
+DEFAULT_MANIFEST = ROOT / "benchmarks" / "public_corpus_manifest.json"
+DEFAULT_QUERIES = ROOT / "benchmarks" / "public_tm_queries.jsonl"
 
 
 @dataclass
