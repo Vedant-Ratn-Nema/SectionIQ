@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Local environments and dependencies
+.venv/
+venv/
+env/
+.vendor/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# SectionIQ local stores and generated indexes
+.sectioniq/
+.rag_store/
+.structured_pdf_rag/
+.amm_demo_store/
+.amm_demo_store_small/
+*.npz
+
+# Benchmark and experiment artifacts
+outputs/
+logs/
+.pageindex_workspace*/
+examples/*checkpoint*.json
+snip.py
+snip.ipynb
+
+# Local data and notebooks that may contain customer/manual content
+*.csv
+*.xlsx
+*.xls
+*.pdf
+*.ipynb
+!examples/*.md
