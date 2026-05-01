@@ -38,6 +38,7 @@ env/
 
 # Benchmark and experiment artifacts
 outputs/
+scripts/
 logs/
 .pageindex_workspace*/
 examples/*checkpoint*.json
